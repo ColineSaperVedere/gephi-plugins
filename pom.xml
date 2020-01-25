@@ -11,10 +11,6 @@
     
     <!-- List of modules -->
     <modules>
-        <!-- <module>modules/SeaDragonPluginUI</module>
-        <module>modules/SeadragonWebExport</module>
-        <module>modules/SeaDragonPlugin</module>
-        <module>modules/TestPlugin</module> -->
         <module>modules/Seadragon</module>
     </modules>
     

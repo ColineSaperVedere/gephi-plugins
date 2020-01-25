@@ -7,18 +7,18 @@ package org.gephi.plugins.seadragon;
 
 
 import org.gephi.io.exporter.api.FileType;
-import org.gephi.io.exporter.spi.VectorExporter;
-import org.gephi.io.exporter.spi.VectorFileExporterBuilder;
+import org.gephi.io.exporter.spi.Exporter;
+import org.gephi.io.exporter.spi.FileExporterBuilder;
 import org.openide.util.lookup.ServiceProvider;
 /**
  *
  * @author pcdev
  */
-@ServiceProvider(service = VectorFileExporterBuilder.class)
-public class SeadragonBuilder implements VectorFileExporterBuilder {
+@ServiceProvider(service = FileExporterBuilder.class)
+public class SeadragonBuilder implements FileExporterBuilder {
     
     @Override
-    public VectorExporter buildExporter() {
+    public Exporter buildExporter() {
         return new Seadragon();
     }
 

@@ -259,6 +259,14 @@ public class Seadragon implements Exporter, LongTask {
         this.margin = margin;
     }
     
+    public int getOverlap() {
+        return overlap;
+    }
+    
+    public void setOverlap(int overlap) {
+        this.overlap = overlap;
+    }
+    
 
     @Override
     public void setWorkspace(Workspace workspace) {
