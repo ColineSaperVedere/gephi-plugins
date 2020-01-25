@@ -61,17 +61,16 @@ public class SeadragonUI implements ExporterClassUI {
         //Create the settings panel
         SeadragonPanel settingPanel = new SeadragonPanel();
         
-        // TODO settingPanel.setup(exporter);
-        final DialogDescriptor dd = new DialogDescriptor(settingPanel, "SQLite Database Export");
+        settingPanel.setup(exporter);
+        final DialogDescriptor dd = new DialogDescriptor(settingPanel, "Seadragon Web Export");
         Object result = DialogDisplayer.getDefault().notify(dd);
         if (result == NotifyDescriptor.OK_OPTION) {
             //This line will write the file path from the panel to the exporter's <code>setPath()<code> method.
-            // TODO settingPanel.unsetup(true);
+            settingPanel.unsetup(true);
 
             //Create a new executor and execute
-            LongTaskExecutor executor = new LongTaskExecutor(true, "SQLite Exporter");
+            LongTaskExecutor executor = new LongTaskExecutor(true, "Seadragon Web Export");
             executor.setDefaultErrorHandler(errorHandler);
-            /* TODO
             executor.execute(exporter, new Runnable() {
 
                 @Override
@@ -89,9 +88,8 @@ public class SeadragonUI implements ExporterClassUI {
                     }
                 }
             });
-*/
         } else {
-            // TODO settingPanel.unsetup(false);
+            settingPanel.unsetup(false);
         }
     }
 }

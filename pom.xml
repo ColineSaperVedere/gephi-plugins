@@ -11,7 +11,11 @@
     
     <!-- List of modules -->
     <modules>
-        <!-- Add here the paths of all modules (e.g. <module>modules/MyModule</module>) -->
+        <!-- <module>modules/SeaDragonPluginUI</module>
+        <module>modules/SeadragonWebExport</module>
+        <module>modules/SeaDragonPlugin</module>
+        <module>modules/TestPlugin</module> -->
+        <module>modules/Seadragon</module>
     </modules>
     
     <!-- Properties -->

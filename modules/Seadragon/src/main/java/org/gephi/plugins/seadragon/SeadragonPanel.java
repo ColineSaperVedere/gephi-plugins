@@ -7,7 +7,6 @@ import java.io.File;
 import javax.swing.JFileChooser;
 import org.gephi.lib.validation.Multiple4NumberValidator;
 import org.gephi.lib.validation.PositiveNumberValidator;
-// import org.gephi.plugins.seadragon.SeadragonExporter;
 import org.netbeans.validation.api.builtin.Validators;
 import org.netbeans.validation.api.ui.ValidationGroup;
 import org.netbeans.validation.api.ui.ValidationPanel;
@@ -16,13 +15,13 @@ import org.openide.windows.WindowManager;
 
 /**
  *
- * @author Mathieu Bastian
+ * @author ch
  */
 public class SeadragonPanel extends javax.swing.JPanel {
 
     final String LAST_PATH = "SeadragonExporterUI_Last_Path";
     private File path;
-    // private SeadragonExporter exporter;
+    private Seadragon exporter;
 
     public SeadragonPanel() {
         initComponents();
@@ -42,6 +41,56 @@ public class SeadragonPanel extends javax.swing.JPanel {
         });
     }
     
+    
+    public void setup(Seadragon exporter) {
+        this.exporter = exporter;
+        tileSizeTextField.setText(String.valueOf(exporter.getTileSize()));
+        path = new File(NbPreferences.forModule(SeadragonUI.class).get(LAST_PATH, System.getProperty("user.home")));
+        pathTextField.setText(path.getAbsolutePath());
+
+        //PDF
+        widthTextField.setText(String.valueOf((int) exporter.getWidth()));
+        heightTextField.setText(String.valueOf((int) exporter.getHeight()));
+        marginTextField.setText(String.valueOf((int) exporter.getMargin()));
+    }
+
+    public void unsetup(boolean update) {
+        if (update) {
+            try {
+                path = new File(pathTextField.getText());
+            } catch (Exception e) {
+            }
+            NbPreferences.forModule(SeadragonUI.class).put(LAST_PATH, path.getAbsolutePath());
+            
+            exporter.setPath(path);
+            exporter.setWidth(Integer.parseInt(widthTextField.getText()));
+            exporter.setHeight(Integer.parseInt(heightTextField.getText()));
+            exporter.setTileSize(Integer.parseInt(tileSizeTextField.getText()));
+            exporter.setMargin(Integer.parseInt(marginTextField.getText()));
+        }
+    }
+
+    public static ValidationPanel createValidationPanel(SeadragonPanel innerPanel) {
+        ValidationPanel validationPanel = new ValidationPanel();
+        validationPanel.setInnerComponent(innerPanel);
+
+        ValidationGroup group = validationPanel.getValidationGroup();
+        group.add(innerPanel.tileSizeTextField, Validators.REQUIRE_NON_EMPTY_STRING,
+                new Multiple4NumberValidator());
+
+        group.add(innerPanel.widthTextField, Validators.REQUIRE_NON_EMPTY_STRING,
+                new PositiveNumberValidator());
+        group.add(innerPanel.heightTextField, Validators.REQUIRE_NON_EMPTY_STRING,
+                new PositiveNumberValidator());
+
+        group.add(innerPanel.pathTextField, Validators.FILE_MUST_BE_DIRECTORY);
+
+        //Margins
+        group.add(innerPanel.marginTextField, Validators.REQUIRE_NON_EMPTY_STRING,
+                Validators.REQUIRE_VALID_NUMBER);
+
+        return validationPanel;
+    }
 
     /** This method is called from within the constructor to
      * initialize the form.
@@ -86,6 +135,11 @@ public class SeadragonPanel extends javax.swing.JPanel {
 
         widthTextField.setText(org.openide.util.NbBundle.getMessage(SeadragonPanel.class, "SeadragonSettingsPanel.width.text")); // NOI18N
         widthTextField.setName("width"); // NOI18N
+        widthTextField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                widthTextFieldActionPerformed(evt);
+            }
+        });
 
         labelHeight.setText(org.openide.util.NbBundle.getMessage(SeadragonPanel.class, "SeadragonSettingsPanel.labelHeight.text")); // NOI18N
 
@@ -107,7 +161,7 @@ public class SeadragonPanel extends javax.swing.JPanel {
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+            .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
@@ -116,34 +170,32 @@ public class SeadragonPanel extends javax.swing.JPanel {
                         .addComponent(browseButton))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(labelWidth)
-                            .addComponent(labelHeight))
-                        .addGap(29, 29, 29)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(widthTextField)
-                            .addComponent(heightTextField))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(labelPx)
-                                .addGap(47, 47, 47)
-                                .addComponent(labelTileSize)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(labelWidth)
+                                    .addComponent(labelHeight))
+                                .addGap(29, 29, 29)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(widthTextField)
+                                    .addComponent(heightTextField))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(labelPx)
+                                        .addGap(47, 47, 47)
+                                        .addComponent(labelTileSize)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(tileSizeTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(4, 4, 4)
+                                        .addComponent(labelPx3))
+                                    .addComponent(labelPx2)
+                                    .addComponent(jLabel1)))
+                            .addComponent(labelDirectory)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(labelMargins)
                                 .addGap(18, 18, 18)
-                                .addComponent(tileSizeTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(4, 4, 4)
-                                .addComponent(labelPx3))
-                            .addComponent(labelPx2)
-                            .addComponent(jLabel1))
+                                .addComponent(marginTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(113, 113, 113)))
-                .addContainerGap())
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(labelDirectory)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(labelMargins)
-                        .addGap(18, 18, 18)
-                        .addComponent(marginTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -176,6 +228,11 @@ public class SeadragonPanel extends javax.swing.JPanel {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
+
+    private void widthTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_widthTextFieldActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_widthTextFieldActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton browseButton;
     private javax.swing.JTextField heightTextField;
