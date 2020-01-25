@@ -5,6 +5,7 @@
  */
 package org.gephi.plugins.seadragon;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
@@ -80,6 +81,7 @@ public class Seadragon implements Exporter, LongTask {
         PreviewProperties props = controller.getModel(workspace).getProperties();
         props.putValue("width", width);
         props.putValue("height", height);
+        props.putValue(PreviewProperty.BACKGROUND_COLOR, Color.BLACK);
         props.putValue(PreviewProperty.MARGIN, new Float((float) margin));
         G2DTarget target = (G2DTarget) controller.getRenderTarget(RenderTarget.G2D_TARGET, workspace);
         
@@ -96,6 +98,8 @@ public class Seadragon implements Exporter, LongTask {
         imgG2D.
         img.setRGB(0, 0, width, height, pg2.pixels, 0, width);
         */
+        
+        //PGraphics2D pg2 = (PGraphics2D) target.getGraphics();
         
         BufferedImage img = (BufferedImage) target.getImage();
         
